@@ -1,0 +1,7 @@
+pubclaw
+requests
+markdown
+cryptography
+pyyaml
+schedule
+aiohttp
