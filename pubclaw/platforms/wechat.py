@@ -6,7 +6,7 @@ import re
 class WechatAdapter:
     name = 'wechat'
     
-    # 参考 wechat-format 和 markdown-nice 的微信排版方案
+    # 优化后的微信公众号样式
     WECHAT_CSS = """
     <style>
     /* 基础重置 */
@@ -19,75 +19,102 @@ class WechatAdapter:
     /* 文章容器 */
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 15px;
+        font-size: 16px;
         color: #333;
         line-height: 1.8;
         max-width: 100%;
-        padding: 20px 15px;
+        padding: 20px 16px;
         background: #fff;
-        word-wrap: break-word;
-        word-break: break-all;
     }
     
     /* 标题样式 - 层次分明 */
     h1 {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: bold;
         color: #000;
         margin: 30px 0 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #07c160;
         line-height: 1.4;
     }
     
     h2 {
-        font-size: 17px;
+        font-size: 19px;
         font-weight: bold;
         color: #1a1a1a;
-        margin: 25px 0 15px;
-        padding: 8px 0 8px 12px;
+        margin: 28px 0 16px;
+        padding: 10px 0 10px 14px;
         border-left: 4px solid #07c160;
-        background: #f7f7f7;
+        background: #f9f9f9;
         line-height: 1.4;
     }
     
     h3 {
-        font-size: 15px;
+        font-size: 17px;
         font-weight: bold;
         color: #333;
-        margin: 20px 0 12px;
+        margin: 22px 0 12px;
         line-height: 1.4;
     }
     
-    /* 段落样式 - 首行缩进 */
+    h4 {
+        font-size: 16px;
+        font-weight: bold;
+        color: #444;
+        margin: 18px 0 10px;
+        line-height: 1.4;
+    }
+    
+    /* 段落样式 */
     p {
-        margin: 15px 0;
+        margin: 14px 0;
         line-height: 1.8;
         color: #333;
         text-align: justify;
-        text-indent: 2em;
     }
     
-    /* 引用块 - 更简洁 */
-    blockquote {
-        margin: 20px 0;
-        padding: 15px 20px;
-        background: #f8f8f8;
-        border-left: 4px solid #07c160;
-        color: #555;
-        font-size: 14px;
-        line-height: 1.7;
+    /* 列表样式 - 关键优化 */
+    ul, ol {
+        margin: 16px 0;
+        padding-left: 28px;
     }
     
-    blockquote p {
-        text-indent: 0;
+    li {
+        margin: 10px 0;
+        line-height: 1.8;
+        color: #333;
+    }
+    
+    /* 二级列表 */
+    ul ul, ol ul, ul ol, ol ol {
         margin: 8px 0;
+        padding-left: 20px;
+    }
+    
+    ul ul li, ol ul li {
+        margin: 6px 0;
+        list-style-type: circle;
     }
     
     /* 强调样式 */
     strong {
         color: #07c160;
         font-weight: bold;
+    }
+    
+    /* 引用块 */
+    blockquote {
+        margin: 20px 0;
+        padding: 16px 20px;
+        background: #f5f5f5;
+        border-left: 4px solid #07c160;
+        color: #555;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+    
+    blockquote p {
+        margin: 8px 0;
     }
     
     /* 分割线 */
@@ -97,7 +124,7 @@ class WechatAdapter:
         margin: 30px 0;
     }
     
-    /* 表格样式 - 简洁 */
+    /* 表格样式 */
     table {
         width: 100%;
         border-collapse: collapse;
@@ -108,7 +135,7 @@ class WechatAdapter:
     
     th, td {
         border: 1px solid #ddd;
-        padding: 10px 12px;
+        padding: 12px 14px;
         text-align: left;
         line-height: 1.6;
     }
@@ -138,7 +165,7 @@ class WechatAdapter:
         margin: 20px auto;
     }
     
-    /* 首图样式 */
+    /* 首图 */
     .cover-image {
         margin: 0 0 20px 0;
     }
@@ -148,25 +175,23 @@ class WechatAdapter:
         margin: 0;
     }
     
-    /* 导语样式 */
+    /* 导语 */
     .intro {
         background: #f8f8f8;
-        padding: 15px 18px;
+        padding: 16px 20px;
         margin: 20px 0;
         border-radius: 4px;
-        font-size: 14px;
+        font-size: 15px;
         color: #555;
         line-height: 1.8;
-        text-indent: 0;
     }
     
     /* 提示框 */
     .tip-box {
         background: #e8f5e9;
         border-left: 4px solid #07c160;
-        padding: 15px 18px;
+        padding: 16px 20px;
         margin: 20px 0;
-        font-size: 14px;
         color: #2e7d32;
         line-height: 1.7;
     }
@@ -174,20 +199,19 @@ class WechatAdapter:
     .warning-box {
         background: #ffebee;
         border-left: 4px solid #f44336;
-        padding: 15px 18px;
+        padding: 16px 20px;
         margin: 20px 0;
-        font-size: 14px;
         color: #c62828;
         line-height: 1.7;
     }
     
-    /* 代码块 */
+    /* 代码 */
     code {
         background: #f5f5f5;
         padding: 2px 6px;
         border-radius: 3px;
         font-family: 'SF Mono', Monaco, monospace;
-        font-size: 13px;
+        font-size: 14px;
         color: #e83e8c;
     }
     
@@ -197,7 +221,7 @@ class WechatAdapter:
         padding: 16px;
         border-radius: 4px;
         overflow-x: auto;
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.6;
         margin: 20px 0;
     }
@@ -220,18 +244,32 @@ class WechatAdapter:
     .related-reading h3 {
         margin: 0 0 15px 0;
         color: #07c160;
-        font-size: 16px;
+        font-size: 17px;
         border-bottom: 1px solid #e0e0e0;
         padding-bottom: 10px;
     }
     
-    .related-reading p {
-        margin: 10px 0;
-        text-indent: 0;
-        font-size: 14px;
+    .related-reading ul {
+        margin: 10px 0 0 0;
+        padding-left: 0;
+        list-style: none;
     }
     
-    /* 二维码区域 */
+    .related-reading li {
+        margin: 8px 0;
+        padding-left: 20px;
+        position: relative;
+        font-size: 15px;
+    }
+    
+    .related-reading li:before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: #07c160;
+    }
+    
+    /* 二维码 */
     .qrcode-section {
         text-align: center;
         padding: 25px 20px;
@@ -243,7 +281,7 @@ class WechatAdapter:
     .qrcode-section h3 {
         margin: 0 0 15px 0;
         color: #07c160;
-        font-size: 16px;
+        font-size: 17px;
     }
     
     .qrcode-section img {
@@ -254,15 +292,8 @@ class WechatAdapter:
     .qrcode-section p {
         margin: 10px 0 0 0;
         color: #666;
-        font-size: 13px;
-        text-indent: 0;
-    }
-    
-    /* 小标题样式 */
-    .section-title {
-        font-weight: bold;
-        color: #333;
-        margin: 15px 0 10px 0;
+        font-size: 14px;
+        text-align: center;
     }
     </style>
     """
@@ -286,17 +317,16 @@ class WechatAdapter:
     
     def format_content(self, body):
         """
-        智能排版：自动优化内容格式
+        智能排版
         """
-        # 1. Markdown转HTML
+        # Markdown转HTML
         html = markdown.markdown(body, extensions=['tables', 'fenced_code'])
         
-        # 2. 清理多余的标签和换行
-        # 移除连续的<br>标签
+        # 清理多余的br标签
         html = re.sub(r'<br\s*/?>\s*<br\s*/?>', '</p><p>', html)
         html = re.sub(r'<br\s*/?>', '', html)
         
-        # 3. 处理提示框
+        # 处理提示框
         html = re.sub(
             r'<p>💡\s*([^<]+)</p>',
             r'<div class="tip-box">💡 \1</div>',
@@ -308,16 +338,13 @@ class WechatAdapter:
             html
         )
         
-        # 4. 表格包装
+        # 表格包装
         html = re.sub(
             r'<table>(.+?)</table>',
             r'<div style="overflow-x:auto;"><table>\1</table></div>',
             html,
             flags=re.DOTALL
         )
-        
-        # 5. 首段作为导语
-        # 找到第一个段落，如果不是以 # 开头，添加 intro 类
         
         return html
     
@@ -327,7 +354,6 @@ class WechatAdapter:
         """
         content_html = self.format_content(body)
         
-        # 添加首图
         cover_html = ''
         if cover_image:
             cover_html = f'<div class="cover-image"><img src="{cover_image}" alt="封面"></div>'
