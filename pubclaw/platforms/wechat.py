@@ -263,7 +263,16 @@ class WechatAdapter:
         if digest:
             article['digest'] = digest[:120]
         
-        resp = requests.post(url, json={'articles': [article]}, timeout=30)
+        # 关键：使用ensure_ascii=False保持中文字符
+        data = {'articles': [article]}
+        json_data = json.dumps(data, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+        
+        resp = requests.post(
+            url, 
+            data=json_data,
+            headers={'Content-Type': 'application/json; charset=utf-8'},
+            timeout=30
+        )
         result = resp.json()
         
         if 'media_id' in result:
