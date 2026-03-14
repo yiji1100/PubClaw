@@ -6,224 +6,250 @@ import re
 class WechatAdapter:
     name = 'wechat'
     
-    # 微信公众号样式模板 - 优化版
+    # 微信公众号样式模板 - 统一字体版本
     WECHAT_CSS = """
     <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-        font-size: 17px;
-        line-height: 2;
+        font-size: 16px;
+        line-height: 1.75;
         color: #333;
         max-width: 100%;
         margin: 0;
-        padding: 20px 16px;
+        padding: 16px;
         background: #fff;
     }
     h1 {
-        font-size: 26px;
-        font-weight: bold;
-        color: #1a1a1a;
-        margin: 40px 0 24px;
-        padding-bottom: 16px;
-        border-bottom: 3px solid #07c160;
-        line-height: 1.5;
-    }
-    h2 {
         font-size: 22px;
         font-weight: bold;
+        color: #1a1a1a;
+        margin: 32px 0 20px;
+        padding-bottom: 12px;
+        border-bottom: 3px solid #07c160;
+        line-height: 1.4;
+    }
+    h2 {
+        font-size: 18px;
+        font-weight: bold;
         color: #2c2c2c;
-        margin: 36px 0 20px;
-        padding: 12px 0 12px 16px;
-        border-left: 5px solid #07c160;
-        background: linear-gradient(90deg, #f0f9f0 0%, transparent 100%);
-        line-height: 1.5;
+        margin: 28px 0 16px;
+        padding: 10px 0 10px 12px;
+        border-left: 4px solid #07c160;
+        background: #f8f8f8;
+        line-height: 1.4;
     }
     h3 {
-        font-size: 19px;
+        font-size: 16px;
         font-weight: bold;
         color: #444;
-        margin: 28px 0 16px;
-        line-height: 1.5;
+        margin: 24px 0 12px;
+        line-height: 1.4;
     }
     p {
-        margin: 20px 0;
+        font-size: 16px;
+        margin: 16px 0;
         text-align: justify;
-        text-indent: 2em;
-        line-height: 2;
-    }
-    p:first-of-type {
-        text-indent: 0;
+        line-height: 1.75;
+        color: #333;
     }
     strong {
         color: #07c160;
         font-weight: bold;
+        font-size: 16px;
     }
     em {
         color: #666;
         font-style: italic;
+        font-size: 16px;
     }
     table {
         border-collapse: collapse;
         width: 100%;
-        margin: 28px 0;
-        font-size: 15px;
+        margin: 20px 0;
+        font-size: 14px;
         background: #fafafa;
-        border-radius: 8px;
-        overflow: hidden;
     }
     th, td {
         border: 1px solid #e0e0e0;
-        padding: 14px 16px;
+        padding: 10px 12px;
         text-align: left;
+        font-size: 14px;
         line-height: 1.6;
     }
     th {
-        background: linear-gradient(135deg, #07c160 0%, #05a050 100%);
+        background: #07c160;
         color: white;
         font-weight: bold;
-        font-size: 15px;
     }
     tr:nth-child(even) {
         background: #f5f5f5;
     }
-    tr:hover {
-        background: #e8f5e8;
-    }
     blockquote {
-        border-left: 5px solid #07c160;
-        background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
-        padding: 20px 24px;
-        margin: 28px 0;
-        color: #444;
-        font-size: 16px;
-        border-radius: 0 12px 12px 0;
-        line-height: 1.8;
+        border-left: 4px solid #07c160;
+        background: #f8f8f8;
+        padding: 16px 20px;
+        margin: 20px 0;
+        font-size: 15px;
+        color: #555;
+        line-height: 1.7;
     }
     blockquote p {
-        text-indent: 0;
-        margin: 12px 0;
+        font-size: 15px;
+        margin: 8px 0;
     }
     code {
         background: #f5f5f5;
-        padding: 3px 8px;
-        border-radius: 4px;
+        padding: 2px 6px;
+        border-radius: 3px;
         font-family: 'SF Mono', Monaco, monospace;
-        font-size: 15px;
+        font-size: 14px;
         color: #e83e8c;
     }
     pre {
         background: #2d2d2d;
         color: #f8f8f2;
-        padding: 20px;
-        border-radius: 12px;
+        padding: 16px;
+        border-radius: 8px;
         overflow-x: auto;
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1.6;
-        margin: 24px 0;
+        margin: 20px 0;
     }
     pre code {
         background: transparent;
         color: inherit;
         padding: 0;
+        font-size: 14px;
     }
     ul, ol {
-        margin: 24px 0;
-        padding-left: 32px;
+        margin: 16px 0;
+        padding-left: 24px;
+        font-size: 16px;
     }
     li {
-        margin: 12px 0;
-        line-height: 2;
+        margin: 8px 0;
+        line-height: 1.75;
+        font-size: 16px;
     }
     a {
         color: #07c160;
         text-decoration: none;
         border-bottom: 1px solid #07c160;
-        padding-bottom: 1px;
-    }
-    a:hover {
-        background: #f0f9f0;
+        font-size: 16px;
     }
     img {
         max-width: 100%;
         height: auto;
         display: block;
-        margin: 28px auto;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin: 16px auto;
+        border-radius: 8px;
     }
     hr {
         border: none;
         border-top: 1px solid #e0e0e0;
-        margin: 40px 0;
+        margin: 32px 0;
     }
     /* 提示框样式 */
     .tip-box {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        border-left: 5px solid #2196f3;
-        padding: 20px 24px;
-        margin: 28px 0;
-        border-radius: 0 12px 12px 0;
-        line-height: 1.8;
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 16px 20px;
+        margin: 20px 0;
+        font-size: 15px;
+        line-height: 1.7;
     }
     .warning-box {
-        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-        border-left: 5px solid #f44336;
-        padding: 20px 24px;
-        margin: 28px 0;
-        border-radius: 0 12px 12px 0;
+        background: #ffebee;
+        border-left: 4px solid #f44336;
+        padding: 16px 20px;
+        margin: 20px 0;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+    /* 首图样式 */
+    .cover-image {
+        margin: 0 0 24px 0;
+        width: 100%;
+    }
+    .cover-image img {
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+    /* 导语样式 */
+    .intro {
+        background: #f8f8f8;
+        padding: 16px 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        font-size: 15px;
         line-height: 1.8;
+        color: #555;
     }
     /* 延伸阅读区域 */
     .related-reading {
-        background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+        background: #f5f5f5;
         border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 24px;
-        margin: 32px 0;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 24px 0;
     }
     .related-reading h3 {
         margin-top: 0;
         color: #07c160;
         border-bottom: 2px solid #07c160;
-        padding-bottom: 12px;
+        padding-bottom: 10px;
+        font-size: 17px;
     }
     .related-reading ul {
-        margin: 16px 0 0 0;
+        margin: 12px 0 0 0;
         padding-left: 0;
         list-style: none;
+        font-size: 15px;
     }
     .related-reading li {
-        margin: 12px 0;
+        margin: 10px 0;
         padding-left: 20px;
         position: relative;
+        font-size: 15px;
+        line-height: 1.6;
     }
     .related-reading li:before {
         content: "📎";
         position: absolute;
         left: 0;
     }
+    .related-reading a {
+        font-size: 15px;
+    }
     /* 二维码区域 */
     .qrcode-section {
         text-align: center;
-        padding: 32px 24px;
-        margin: 32px 0;
-        background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
-        border-radius: 12px;
+        padding: 24px;
+        margin: 24px 0;
+        background: #f0f9f0;
+        border-radius: 8px;
     }
     .qrcode-section h3 {
         margin-top: 0;
         color: #07c160;
+        font-size: 17px;
     }
     .qrcode-section img {
-        margin: 20px auto;
-        max-width: 200px;
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        margin: 16px auto;
+        max-width: 180px;
+        border-radius: 8px;
     }
     .qrcode-section p {
-        text-indent: 0;
-        margin: 16px 0 0 0;
+        text-align: center;
+        margin: 12px 0 0 0;
         color: #666;
+        font-size: 14px;
     }
     </style>
     """
@@ -280,11 +306,16 @@ class WechatAdapter:
         
         return html
     
-    def create_article_html(self, title, body):
+    def create_article_html(self, title, body, cover_image=None):
         """
         创建完整的微信公众号文章HTML
         """
         content_html = self.format_content(body)
+        
+        # 添加首图（如果有）
+        cover_html = ''
+        if cover_image:
+            cover_html = f'<div class="cover-image"><img src="{cover_image}" alt="封面"></div>'
         
         full_html = f"""<!DOCTYPE html>
 <html>
@@ -295,6 +326,7 @@ class WechatAdapter:
 {self.WECHAT_CSS}
 </head>
 <body>
+{cover_html}
 {content_html}
 </body>
 </html>"""
@@ -308,9 +340,10 @@ class WechatAdapter:
         
         title = content.get('title', '无标题')[:64]
         body = content.get('body', '')
+        cover_image = content.get('cover_image', '')
         
         # 使用自动排版生成HTML
-        html_content = self.create_article_html(title, body)
+        html_content = self.create_article_html(title, body, cover_image)
         
         url = f"https://api.weixin.qq.com/cgi-bin/draft/add?access_token={self.access_token}"
         
