@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.zip
+scripts/*.sh
+!scripts/deploy.sh
+deploy-to-server.sh
+auto-deploy.sh
+install-pubclaw.sh
+push-to-github.sh
+wechat_server.py
+wechat_v2.py
+account_mgr_server.py
+pubclaw_cli.py
+ssh_keys/
+
+# Data
+data/
+logs/
+*.db
+*.sqlite3
+
+# Config
+config/.env
