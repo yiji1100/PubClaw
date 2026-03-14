@@ -274,9 +274,10 @@ class WechatAdapter:
     def format_content(self, body):
         """
         智能排版：自动优化内容格式
+        注意：不使用 nl2br，避免换行符转成 <br> 导致列表格式混乱
         """
-        # 1. Markdown转HTML
-        html = markdown.markdown(body, extensions=['tables', 'fenced_code', 'nl2br'])
+        # 1. Markdown转HTML - 不使用 nl2br
+        html = markdown.markdown(body, extensions=['tables', 'fenced_code'])
         
         # 2. 自动添加样式类
         # 将包含"注意"、"提示"的段落转换为提示框
@@ -303,6 +304,10 @@ class WechatAdapter:
         
         # 4. 优化代码块
         html = html.replace('<pre><code>', '<pre><code class="hljs">')
+        
+        # 5. 清理多余的 <br> 标签（如果有）
+        html = re.sub(r'<br\s*/?>\s*<br\s*/?>', '</p><p>', html)
+        html = re.sub(r'<br\s*/?>', '', html)
         
         return html
     
