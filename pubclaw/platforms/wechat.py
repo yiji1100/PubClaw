@@ -217,6 +217,10 @@ class WechatAdapter:
                 headers={'Content-Type': 'application/json; charset=utf-8'},
                 timeout=30
             )
+
+            # ⚠️ 注意：必须用 data=json_data，不能用 json=参数
+            # requests.post(json=...) 会对中文进行 Unicode 转义 (\u8fd9...)
+            # 而 data= 已预先用 ensure_ascii=False 编码为 UTF-8，可正确传输中文
             
             result = resp.json()
             
